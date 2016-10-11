@@ -40,7 +40,7 @@ public class DbHelper {
     {
         try {
             Statement st = connection.createStatement();
-            InputStream is = getClass().getResourceAsStream("createbase/database.sql");
+            InputStream is = getClass().getResourceAsStream("/createbase/database.sql");
             StringBuilder sb = new StringBuilder();
             while (is.available() > 0)
             {

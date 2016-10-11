@@ -19,8 +19,8 @@ public class MainTableModel extends AbstractTableModel {
     int columnCount;
     Set<Quest> qSet;
     Object[][] obj;
-    String[] headers = new String[]{"Имя", "Подразделение", "Дата", "Входящая", "Исходящая", "Вып/Не вып", "Описание"};
-    Class[] columnClass = new Class[]{String.class, Department.class, Date.class, File.class, File.class, ImageIcon.class, String.class};
+    String[] headers = {"Имя", "Подразделение", "Дата", "Входящая", "Исходящая", "Вып/Не вып", "Описание"};
+    Class[] columnClass = {String.class, Department.class, Date.class, File.class, File.class, ImageIcon.class, String.class};
 
     public MainTableModel(Set<Quest> qSet)
     {
@@ -31,19 +31,19 @@ public class MainTableModel extends AbstractTableModel {
     }
     private Object[][] exportedData()
     {
-        Quest[] qArr = (Quest[]) qSet.toArray();
+        Object[] qArr = qSet.toArray();
         Object[][] objects = new Object[qSet.size()][7];
         for(int i = 0; i < qSet.size(); i++)
         {
-            objects[i][0] = qArr[i].getName();
-            objects[i][1] = qArr[i].getDepartment();
-            objects[i][2] = qArr[i].getDate();
-            objects[i][3] = qArr[i].getApplication().getName();
-            objects[i][4] = qArr[i].getSelfApplication().getName();
-            if(qArr[i].isDone())
+            objects[i][0] = ((Quest)qArr[i]).getName();
+            objects[i][1] = ((Quest)qArr[i]).getDepartment();
+            objects[i][2] = ((Quest)qArr[i]).getDate();
+            objects[i][3] = ((Quest)qArr[i]).getApplication().getName();
+            objects[i][4] = ((Quest)qArr[i]).getSelfApplication().getName();
+            if(((Quest)qArr[i]).isDone())
                 objects[i][5] = new ImageIcon("./src/main/resources/icons/plus.jpg");
             else objects[i][5] = new ImageIcon("./src/main/resources/icons/minus.jpg");
-            objects[i][6] = qArr[i].getDescription();
+            objects[i][6] = ((Quest)qArr[i]).getDescription();
         }
         return objects;
     }
