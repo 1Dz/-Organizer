@@ -6,13 +6,12 @@ import observable.Observable;
 import observable.Observer;
 
 import javax.swing.*;
-import javax.swing.plaf.ColorUIResource;
-import javax.swing.plaf.FontUIResource;
 import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Set;
+import java.util.*;
+import java.util.List;
 
 /**
  * Created by user on 29.09.16.
@@ -21,6 +20,7 @@ public class MainWindow extends JFrame implements Observable, ActionListener{
 
     private Controller controller;
     private Set<Quest> quests;
+    private Quest quest;
     private JPanel tablePanel;
     private JPanel buttonPanel;
     private TableModel mainTable;
@@ -48,9 +48,23 @@ public class MainWindow extends JFrame implements Observable, ActionListener{
         addQuest.addActionListener(this);
         addQuest.setActionCommand("addQuest");
         addQuest.setFont(new Font("Comic Sans", Font.CENTER_BASELINE, 13));
-        addQuest.setBounds(20, 150, 90, 50);
+        addQuest.setBounds(20, 145, 90, 50);
 
+        JButton removeButton = new JButton("<html> Удалить <p> запись </html>");
+        removeButton.addActionListener(this);
+        removeButton.setActionCommand("removeQuest");
+        removeButton.setFont(new Font("Comic Sans", Font.CENTER_BASELINE, 13));
+        removeButton.setBounds(120, 145, 90, 50);
+
+        JButton editButton = new JButton("<html> Редактировать <p> запись </html>");
+        editButton.addActionListener(this);
+        editButton.setActionCommand("editQuest");
+        editButton.setFont(new Font("Comic Sans", Font.CENTER_BASELINE, 13));
+        editButton.setBounds(220, 145, 125, 50);
+
+        buttonPanel.add(removeButton);
         buttonPanel.add(addQuest);
+        buttonPanel.add(editButton);
         this.add(buttonPanel);
     }
 
@@ -87,6 +101,25 @@ public class MainWindow extends JFrame implements Observable, ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        switch (e.getActionCommand())
+        {
+            case "addQuest":
+                new AddQuest();
+        }
+    }
+    /*
+    //TODO: this method after AddQuest class
+    public Quest addQuest()
+    {
+        Quest newQuest = null;
+        return newQuest;
+    }*/
 
+    public Quest getQuest() {
+        return quest;
+    }
+
+    public void setQuest(Quest quest) {
+        this.quest = quest;
     }
 }

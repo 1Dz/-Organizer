@@ -25,6 +25,10 @@ public class Model {
             JOptionPane.showMessageDialog(new JFrame(), e.getMessage());
         }
     }
+    public void addQuest(Quest quest)
+    {
+        store.addQuest(quest);
+    }
 
     public Quest getQuest() {
         return quest;
