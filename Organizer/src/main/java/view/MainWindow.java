@@ -104,16 +104,9 @@ public class MainWindow extends JFrame implements Observable, ActionListener{
         switch (e.getActionCommand())
         {
             case "addQuest":
-                new AddQuest();
+                new AddQuest(this);
         }
     }
-    /*
-    //TODO: this method after AddQuest class
-    public Quest addQuest()
-    {
-        Quest newQuest = null;
-        return newQuest;
-    }*/
 
     public Quest getQuest() {
         return quest;

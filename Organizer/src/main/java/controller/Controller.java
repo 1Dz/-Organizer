@@ -22,7 +22,12 @@ public class Controller implements Observer{
     }
     @Override
     public void handleAction(String action) {
-
+        switch (action)
+        {
+            case "addQuest":
+                model.addQuest(view.getQuest());
+                break;
+        }
     }
 
     public Set<Quest> getQuests()
