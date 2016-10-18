@@ -17,17 +17,21 @@ import java.util.*;
  */
 public class CarpetStore implements DataStore {
     private Connection connection = DbHelper.getInstance().getConnection();
-    public void addQuest(Quest quest) {
+    public void addQuest(Quest quest) throws StoreException {
         try {
             String request = "INSERT INTO quests (name, who, date, application, selfApplication, done, description) VALUES('" +
                     quest.getName() + "', '" + quest.getDepartment() + "' , '" + new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH).format(quest.getDate()) +
                     "', '" + quest.getApplication().toPath().getFileName().toString() + "', '" + quest.getSelfApplication().toPath().getFileName().toString() +
-                    "' , " + quest.getIntDone() + " , '" + quest.getDescription() +"'";
+                    "' , " + quest.getIntDone() + " , '" + quest.getDescription() +"')";
             Statement st = connection.createStatement();
             st.execute(request);
             st.close();
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+        catch (NullPointerException e1)
+        {
+            throw new StoreException("Поля должны быть заполнены", e1);
         }
     }
 
@@ -43,7 +47,7 @@ public class CarpetStore implements DataStore {
         }
     }
 
-    public void updateQuest(Quest quest) {
+    public void updateQuest(Quest quest) throws StoreException {
         removeQuest(quest.getName());
         addQuest(quest);
     }
@@ -215,12 +219,7 @@ public class CarpetStore implements DataStore {
         return resultSet;
     }
         public Set<Quest> getQuest() throws StoreException {
-            Set<Quest> resultSet = new TreeSet<>(new Comparator<Quest>() {
-                @Override
-                public int compare(Quest o1, Quest o2) {
-                    return o1.getDate().compareTo(o2.getDate());
-                }
-            });
+            Set<Quest> resultSet = new HashSet<>();
             String request = "SELECT * FROM quests";
             try {
                 Statement st = connection.createStatement();
@@ -239,14 +238,13 @@ public class CarpetStore implements DataStore {
                     File application = new File(rs.getString("application"));
                     Quest quest;
                     if(application == null) {
-                        quest = new Quest(qName, dep, qDate, isDone, description);
+                        resultSet.add(new Quest(qName, dep, qDate, isDone, description));
                     }
                     else
                     {
                         File selfApplication = new File(rs.getString("selfApplication"));
-                        quest = new Quest(qName, dep, qDate, application, selfApplication, isDone, description);
+                        resultSet.add(new Quest(qName, dep, qDate, application, selfApplication, isDone, description));
                     }
-                    resultSet.add(quest);
                 }
 
             } catch (SQLException e) {

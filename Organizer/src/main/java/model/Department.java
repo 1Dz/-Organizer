@@ -5,7 +5,7 @@ package model;
  */
 public enum Department {
     FPKI {
-        public String toString() {
+        public String toRusString() {
             return "ФПКИ";
         }
 
@@ -15,7 +15,7 @@ public enum Department {
     },
     PTKI {
         @Override
-        public String toString() {
+        public String toRusString() {
             return "ПТКИ";
         }
 
@@ -25,7 +25,7 @@ public enum Department {
     },
     OGM {
         @Override
-        public String toString() {
+        public String toRusString() {
             return "ОГМ";
         }
 
@@ -35,7 +35,7 @@ public enum Department {
     },
     PSH {
         @Override
-        public String toString() {
+        public String toRusString() {
             return "ПСХ";
         }
 
@@ -45,7 +45,7 @@ public enum Department {
     },
     HOZ {
         @Override
-        public String toString() {
+        public String toRusString() {
             return "Хоз. отдел";
         }
 
@@ -55,7 +55,7 @@ public enum Department {
     },
     TRANSPORT {
         @Override
-        public String toString() {
+        public String toRusString() {
             return "ТЦ";
         }
 
@@ -65,7 +65,7 @@ public enum Department {
     },
     ADMINISTRATION {
         @Override
-        public String toString() {
+        public String toRusString() {
             return "Управление";
         }
 
@@ -77,4 +77,6 @@ public enum Department {
     public String toEngString() {
         return this.toEngString();
     }
+
+    public String toRusString() { return this.toRusString();}
 }

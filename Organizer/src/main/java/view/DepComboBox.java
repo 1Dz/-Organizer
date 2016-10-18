@@ -14,6 +14,6 @@ public class DepComboBox extends JComboBox {
     public DepComboBox()
     {
         for(Department x : deps)
-            this.addItem(x.toString());
+            this.addItem(x.toRusString());
     }
 }

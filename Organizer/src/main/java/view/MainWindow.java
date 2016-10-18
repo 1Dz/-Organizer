@@ -1,15 +1,14 @@
 package view;
 
 import controller.Controller;
+import model.Department;
 import model.Quest;
 import observable.Observable;
 import observable.Observer;
 
 import javax.swing.*;
-import javax.swing.table.TableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.util.*;
 import java.util.List;
 
@@ -23,11 +22,17 @@ public class MainWindow extends JFrame implements Observable, ActionListener{
     private Quest quest;
     private JPanel tablePanel;
     private JPanel buttonPanel;
-    private TableModel mainTable;
+    private MainTableModel mainTable;
+    private List<Observer> observers = new ArrayList<>();
+    private JLabel filterLabel;
+    private JLabel imageFilterLabel;
+    private ImageIcon filterIcon;
+    private FilterTableModel filterTableModel;
 
     public MainWindow(Controller controller)
     {
         this.controller = controller;
+        addObserver(controller);
         this.setTitle("Органайзер");
         this.setBackground(new Color(60, 60, 60));
         this.setResizable(false);
@@ -35,6 +40,7 @@ public class MainWindow extends JFrame implements Observable, ActionListener{
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         initTable();
         initButtons();
+        initFilter();
         this.setVisible(true);
     }
 
@@ -73,15 +79,77 @@ public class MainWindow extends JFrame implements Observable, ActionListener{
         tablePanel = new JPanel();
         tablePanel.setLayout(null);
         tablePanel.setBounds(0, 200, 700, 280);
-
         this.quests = controller.getQuests();
         this.mainTable = new MainTableModel(quests);
-        JTable table = new JTable(mainTable);
+        final JTable table = new MyTable(mainTable);
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                quest = controller.getQuest((String) mainTable.getValueAt(table.getSelectedRow(), 0));
+            }
+        });
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBounds(20, 0, 660, 250);
         tablePanel.add(scrollPane);
 
         this.add(tablePanel);
+    }
+
+    private void initFilter()
+    {
+        this.filterIcon = new ImageIcon("./src/main/resources/icons/filter.jpg");
+        this.imageFilterLabel = new JLabel(filterIcon);
+        this.imageFilterLabel.setBounds(20, 15, 20, 20);
+        this.filterLabel = new JLabel("Фильтр:");
+        this.filterLabel.setBounds(40, 10, 100, 30);
+        final FilterTableModel filterTableModel = new FilterTableModel(quests, "Нет фильтра");
+        JTable filterTable = new JTable(filterTableModel);
+        JScrollPane scrollPane = new JScrollPane(filterTable);
+        scrollPane.setBounds(180, 15, 120, 125);
+        ButtonGroup bg = new ButtonGroup();
+        JRadioButton nameBut = new JRadioButton("Имя");
+        nameBut.setBounds(40, 35, 50, 30);
+        nameBut.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                filterTableModel.update(quests, "Имя");
+            }
+        });
+        JRadioButton depBut = new JRadioButton("Подразделение");
+        depBut.setBounds(40, 60, 120, 30);
+        depBut.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                filterTableModel.update(quests, "Подразделение");
+            }
+        });
+        JRadioButton dateBut = new JRadioButton("Дата");
+        dateBut.setBounds(40, 85, 50, 30);
+        dateBut.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                filterTableModel.update(quests, "Дата");
+            }
+        });
+        JRadioButton noFilter = new JRadioButton("Нет");
+        noFilter.setBounds(40, 110, 50, 30);
+        noFilter.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                filterTableModel.update(quests, "Нет фильтра");
+            }
+        });
+        bg.add(nameBut);
+        bg.add(depBut);
+        bg.add(dateBut);
+        bg.add(noFilter);
+        buttonPanel.add(imageFilterLabel);
+        buttonPanel.add(scrollPane);
+        buttonPanel.add(filterLabel);
+        buttonPanel.add(nameBut);
+        buttonPanel.add(depBut);
+        buttonPanel.add(dateBut);
+        buttonPanel.add(noFilter);
     }
 
     public void setQuests(Set<Quest> quests) {
@@ -104,7 +172,22 @@ public class MainWindow extends JFrame implements Observable, ActionListener{
         switch (e.getActionCommand())
         {
             case "addQuest":
-                new AddQuest(this);
+                AddQuest q = new AddQuest(this);
+                break;
+            case "removeQuest":
+                notifyObservers("removeQuest");
+                try {
+                    quest = quests.iterator().next();
+                }
+                catch (NoSuchElementException e1)
+                {
+                    quest = null;
+                }
+                mainTable.update(quests);
+                break;
+            case "editQuest":
+                new EditQuest(this, quest);
+                break;
         }
     }
 
@@ -114,5 +197,13 @@ public class MainWindow extends JFrame implements Observable, ActionListener{
 
     public void setQuest(Quest quest) {
         this.quest = quest;
+    }
+
+    public MainTableModel getMainTable() {
+        return mainTable;
+    }
+
+    public Set<Quest> getQuests() {
+        return quests;
     }
 }

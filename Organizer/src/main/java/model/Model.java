@@ -27,9 +27,17 @@ public class Model {
     }
     public void addQuest(Quest quest)
     {
-        store.addQuest(quest);
+        try {
+            store.addQuest(quest);
+        } catch (StoreException e) {
+            JOptionPane.showMessageDialog(new JFrame(), e.getMessage());
+        }
     }
 
+    public void removeQuest(Quest quest)
+    {
+        store.removeQuest(quest.getName());
+    }
     public Quest getQuest() {
         return quest;
     }
@@ -39,10 +47,42 @@ public class Model {
     }
 
     public Set<Quest> getqSet() {
-        return qSet;
+        try {
+            return store.getQuest();
+        } catch (StoreException e) {
+            JOptionPane.showMessageDialog(new JFrame(), e.getMessage());
+        }
+        return null;
     }
 
     public void setqSet(Set<Quest> qSet) {
         this.qSet = qSet;
+    }
+
+    public Set<Quest> getqSet(String name)
+    {
+        try {
+            return store.getQuest(name);
+        } catch (StoreException e) {
+            JOptionPane.showMessageDialog(new JFrame(), e.getMessage());
+        }
+        return null;
+    }
+    public void updateQuest(Quest quest)
+    {
+        try {
+            store.updateQuest(quest);
+        } catch (StoreException e) {
+            JOptionPane.showMessageDialog(new JFrame(), e.getMessage());
+        }
+    }
+    public Set<Quest> getqSet(Department department)
+    {
+        try {
+            return store.getQuest(department);
+        } catch (StoreException e) {
+            JOptionPane.showMessageDialog(new JFrame(), e.getMessage());
+        }
+        return null;
     }
 }

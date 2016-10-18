@@ -1,10 +1,12 @@
 package controller;
 
+import model.Department;
 import model.Model;
 import model.Quest;
 import observable.Observer;
 import view.MainWindow;
 
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -26,6 +28,15 @@ public class Controller implements Observer{
         {
             case "addQuest":
                 model.addQuest(view.getQuest());
+                view.setQuests(model.getqSet());
+                break;
+            case "removeQuest":
+                model.removeQuest(view.getQuest());
+                view.setQuests(model.getqSet());
+                break;
+            case "editQuest":
+                model.updateQuest(view.getQuest());
+                view.setQuests(model.getqSet());
                 break;
         }
     }
@@ -34,5 +45,20 @@ public class Controller implements Observer{
     {
         return model.getqSet();
     }
-
+    public Quest getQuest(String name)
+    {
+        Iterator<Quest> it = model.getqSet(name).iterator();
+        Quest result;
+        while (it.hasNext())
+        {
+            result = it.next();
+            if(result.getName().equals(name))
+                return result;
+        }
+        return null;
+    }
+    public Set<Quest> getQuests(Department department)
+    {
+        return model.getqSet(department);
+    }
 }

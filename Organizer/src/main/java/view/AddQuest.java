@@ -8,12 +8,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 /**
  * Created by user on 12.10.16.
@@ -22,7 +18,6 @@ public class AddQuest extends JFrame {
 
     private JPanel panel;
     private JTextField nameField;
-    private JTextField departmentField;
     private JTextField inField;
     private JTextField outField;
     private JTextArea descField;
@@ -206,14 +201,17 @@ public class AddQuest extends JFrame {
                 String name = nameField.getText();
                 Department dep = null;
                 for(Department x : Department.values()) {
-                    if(x.toString().equals(qBox.getSelectedItem().toString()))
+                    if(x.toRusString().equals(qBox.getSelectedItem().toString())) {
                         dep = x;
+                        break;
+                    }
                 }
                 Date date = dateChooser.getDate();
                 String describtion = descField.getText();
                 resultQuest = new Quest(name, dep, date, inFile, outFile, isDone, describtion);
                 called.setQuest(resultQuest);
                 called.notifyObservers("addQuest");
+                called.getMainTable().update(called.getQuests());
                 dispose();
             }
         });

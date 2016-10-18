@@ -9,9 +9,9 @@ import java.util.Set;
  * Created by user on 29.09.16.
  */
 public interface DataStore {
-    void addQuest(Quest quest);
+    void addQuest(Quest quest) throws StoreException;
     void removeQuest(String quest);
-    void updateQuest(Quest quest);
+    void updateQuest(Quest quest) throws StoreException;
     Set<Quest> getQuest(String name) throws StoreException;
     Set<Quest> getQuest(Date date) throws StoreException;
     Set<Quest> getQuest(Department whoes) throws StoreException;

@@ -4,6 +4,7 @@ import model.Department;
 import model.Quest;
 
 import javax.swing.*;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import java.io.File;
 import java.io.ObjectInput;
@@ -36,7 +37,7 @@ public class MainTableModel extends AbstractTableModel {
         for(int i = 0; i < qSet.size(); i++)
         {
             objects[i][0] = ((Quest)qArr[i]).getName();
-            objects[i][1] = ((Quest)qArr[i]).getDepartment();
+            objects[i][1] = ((Quest)qArr[i]).getDepartment().toRusString();
             objects[i][2] = ((Quest)qArr[i]).getDate();
             objects[i][3] = ((Quest)qArr[i]).getApplication().getName();
             objects[i][4] = ((Quest)qArr[i]).getSelfApplication().getName();
@@ -66,6 +67,7 @@ public class MainTableModel extends AbstractTableModel {
     public Object getValueAt(int rowIndex, int columnIndex) {
         return obj[rowIndex][columnIndex];
     }
+
 
     @Override
     public String getColumnName(int column) {

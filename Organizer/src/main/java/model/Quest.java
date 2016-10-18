@@ -97,4 +97,17 @@ public class Quest {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public String toString() {
+        return "Quest{" +
+                "name='" + name + '\'' +
+                ", department=" + department +
+                ", date=" + date +
+                ", application=" + application +
+                ", selfApplication=" + selfApplication +
+                ", done=" + done +
+                ", description='" + description + '\'' +
+                '}';
+    }
 }
