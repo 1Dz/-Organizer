@@ -1,14 +1,22 @@
 package view;
 
 import controller.Controller;
+import exception.OrgException;
 import model.Department;
 import model.Quest;
 import observable.Observable;
 import observable.Observer;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 
@@ -27,7 +35,6 @@ public class MainWindow extends JFrame implements Observable, ActionListener{
     private JLabel filterLabel;
     private JLabel imageFilterLabel;
     private ImageIcon filterIcon;
-    private FilterTableModel filterTableModel;
 
     public MainWindow(Controller controller)
     {
@@ -48,26 +55,38 @@ public class MainWindow extends JFrame implements Observable, ActionListener{
     {
         buttonPanel = new JPanel();
         buttonPanel.setLayout(null);
-        buttonPanel.setBounds(0, 100, 700, 100);
+        buttonPanel.setBounds(0, 150, 700, 100);
 
         JButton addQuest = new JButton("<html>Добавить <p>запись</html>");
         addQuest.addActionListener(this);
         addQuest.setActionCommand("addQuest");
         addQuest.setFont(new Font("Comic Sans", Font.CENTER_BASELINE, 13));
-        addQuest.setBounds(20, 145, 90, 50);
+        addQuest.setBounds(20, 0, 90, 50);
 
         JButton removeButton = new JButton("<html> Удалить <p> запись </html>");
         removeButton.addActionListener(this);
         removeButton.setActionCommand("removeQuest");
         removeButton.setFont(new Font("Comic Sans", Font.CENTER_BASELINE, 13));
-        removeButton.setBounds(120, 145, 90, 50);
+        removeButton.setBounds(120, 0, 90, 50);
 
         JButton editButton = new JButton("<html> Редактировать <p> запись </html>");
         editButton.addActionListener(this);
         editButton.setActionCommand("editQuest");
         editButton.setFont(new Font("Comic Sans", Font.CENTER_BASELINE, 13));
-        editButton.setBounds(220, 145, 125, 50);
+        editButton.setBounds(220, 0, 125, 50);
 
+        JButton instructions = new JButton("Инструкции");
+        instructions.addActionListener(this);
+        instructions.setActionCommand("Инструкции");
+        instructions.setBounds(350, 0, 100, 20);
+
+        JButton letters = new JButton("Письма");
+        letters.addActionListener(this);
+        letters.setActionCommand("Письма");
+        letters.setBounds(350, 20, 100, 20);
+
+        buttonPanel.add(instructions);
+        buttonPanel.add(letters);
         buttonPanel.add(removeButton);
         buttonPanel.add(addQuest);
         buttonPanel.add(editButton);
@@ -86,6 +105,46 @@ public class MainWindow extends JFrame implements Observable, ActionListener{
             @Override
             public void mouseClicked(MouseEvent e) {
                 quest = controller.getQuest((String) mainTable.getValueAt(table.getSelectedRow(), 0));
+                JTable x = (JTable) e.getComponent();
+                if(x.getSelectedColumn() == 5 && e.getClickCount() == 2)
+                {
+                    if(quest.isDone())
+                    {
+                        quest.setDone(false);
+                        controller.handleAction("updateQuest");
+                        mainTable.update(quests);
+                    }
+                    else {
+                        quest.setDone(true);
+                        controller.handleAction("updateQuest");
+                        mainTable.update(quests);
+                    }
+                }
+                if(e.getClickCount() == 2 && x.getSelectedColumn() == 3 || e.getClickCount() == 2 && x.getSelectedColumn() == 4)
+                {
+                    int i = JOptionPane.showConfirmDialog(new JFrame(), "Открыть заявку "
+                            + x.getValueAt(x.getSelectedRow(), x.getSelectedColumn()) + "?");
+                    if(i == 0)
+                    {
+                        Desktop desktop = null;
+                        if(desktop.isDesktopSupported())
+                        {
+                            desktop = Desktop.getDesktop();
+                            try {
+                                if (x.getSelectedColumn() == 3)
+                                    desktop.open(quest.getApplication());
+                                if (x.getSelectedColumn() == 4)
+                                    desktop.open(quest.getSelfApplication());
+                            } catch (IOException e1) {
+                                try {
+                                    throw new OrgException("Desktop is no supported." + e1.getMessage());
+                                } catch (OrgException e2) {
+                                    JOptionPane.showMessageDialog(new JFrame(), e2.getMessage());
+                                }
+                            }
+                        }
+                    }
+                }
             }
         });
         JScrollPane scrollPane = new JScrollPane(table);
@@ -97,59 +156,107 @@ public class MainWindow extends JFrame implements Observable, ActionListener{
 
     private void initFilter()
     {
-        this.filterIcon = new ImageIcon("./src/main/resources/icons/filter.jpg");
+        JPanel filterPanel = new JPanel(null);
+        filterPanel.setBounds(0, 0, 150, 150);
+
+        this.add(filterPanel);
+        this.filterIcon = new ImageIcon(getClass().getResource("/icons/filter.jpg"));
         this.imageFilterLabel = new JLabel(filterIcon);
         this.imageFilterLabel.setBounds(20, 15, 20, 20);
         this.filterLabel = new JLabel("Фильтр:");
         this.filterLabel.setBounds(40, 10, 100, 30);
+
         final FilterTableModel filterTableModel = new FilterTableModel(quests, "Нет фильтра");
+
         JTable filterTable = new JTable(filterTableModel);
+        filterTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                JTable x = (JTable) e.getComponent();
+                String s = (String) x.getValueAt(x.getSelectedRow(), 0);
+                switch (x.getColumnName(0))
+                {
+                    case "Имя":
+                        quests = controller.getqSet(s);
+                        mainTable.update(quests);
+                        break;
+                    case "Подразделение":
+                        quests = controller.getQuests(Department.convert(s));
+                        mainTable.update(quests);
+                        break;
+                    case "Дата":
+                        try {
+                            quests = controller.getQuests(new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH).parse(s));
+                            mainTable.update(quests);
+                        } catch (ParseException e1) {
+                            e1.printStackTrace();
+                        }
+                        break;
+                    default:
+                        quests = controller.getQuests();
+                        mainTable.update(quests);
+                }
+            }
+        });
         JScrollPane scrollPane = new JScrollPane(filterTable);
         scrollPane.setBounds(180, 15, 120, 125);
+
         ButtonGroup bg = new ButtonGroup();
+
         JRadioButton nameBut = new JRadioButton("Имя");
         nameBut.setBounds(40, 35, 50, 30);
         nameBut.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                quests = controller.getQuests();
+                mainTable.update(quests);
                 filterTableModel.update(quests, "Имя");
             }
         });
+
         JRadioButton depBut = new JRadioButton("Подразделение");
         depBut.setBounds(40, 60, 120, 30);
         depBut.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                quests = controller.getQuests();
                 filterTableModel.update(quests, "Подразделение");
             }
         });
+
         JRadioButton dateBut = new JRadioButton("Дата");
         dateBut.setBounds(40, 85, 50, 30);
         dateBut.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                quests = controller.getQuests();
                 filterTableModel.update(quests, "Дата");
             }
         });
+
         JRadioButton noFilter = new JRadioButton("Нет");
         noFilter.setBounds(40, 110, 50, 30);
         noFilter.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                quests = controller.getQuests();
+                mainTable.update(quests);
                 filterTableModel.update(quests, "Нет фильтра");
             }
         });
+
         bg.add(nameBut);
         bg.add(depBut);
         bg.add(dateBut);
         bg.add(noFilter);
-        buttonPanel.add(imageFilterLabel);
-        buttonPanel.add(scrollPane);
-        buttonPanel.add(filterLabel);
-        buttonPanel.add(nameBut);
-        buttonPanel.add(depBut);
-        buttonPanel.add(dateBut);
-        buttonPanel.add(noFilter);
+
+        filterPanel.add(imageFilterLabel);
+        filterPanel.add(scrollPane);
+        filterPanel.add(filterLabel);
+        filterPanel.add(nameBut);
+        filterPanel.add(depBut);
+        filterPanel.add(dateBut);
+        filterPanel.add(noFilter);
     }
 
     public void setQuests(Set<Quest> quests) {

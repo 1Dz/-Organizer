@@ -63,7 +63,7 @@ public class FilterTableModel extends AbstractTableModel {
             while (it.hasNext())
             {
                 Quest temp = it.next();
-                if(!tempList.contains(temp.getDate()))
+                if(!tempList.contains(new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH).format(temp.getDate())))
                 {
                     tempList.add(new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH).format(temp.getDate()));
                 }
@@ -97,4 +97,6 @@ public class FilterTableModel extends AbstractTableModel {
     public Object getValueAt(int rowIndex, int columnIndex) {
         return data[rowIndex];
     }
+
+
 }

@@ -4,6 +4,7 @@ import controller.Controller;
 import exception.StoreException;
 
 import javax.swing.*;
+import java.util.Date;
 import java.util.Set;
 
 /**
@@ -80,6 +81,15 @@ public class Model {
     {
         try {
             return store.getQuest(department);
+        } catch (StoreException e) {
+            JOptionPane.showMessageDialog(new JFrame(), e.getMessage());
+        }
+        return null;
+    }
+
+    public Set<Quest> getqSet(Date date) {
+        try {
+            return store.getQuest(date);
         } catch (StoreException e) {
             JOptionPane.showMessageDialog(new JFrame(), e.getMessage());
         }

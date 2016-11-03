@@ -79,4 +79,26 @@ public enum Department {
     }
 
     public String toRusString() { return this.toRusString();}
+
+    public static Department convert(String name)
+    {
+        switch (name){
+            case "ФПКИ":
+                return FPKI;
+            case "ПТКИ":
+                return PTKI;
+            case "ОГМ":
+                return OGM;
+            case "ПСХ":
+                return PSH;
+            case "Хоз. отдел":
+                return HOZ;
+            case "ТЦ":
+                return TRANSPORT;
+            case "Управление":
+                return ADMINISTRATION;
+            default: return FPKI;
+
+        }
+    }
 }

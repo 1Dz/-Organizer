@@ -21,7 +21,7 @@ public class CarpetStore implements DataStore {
         try {
             String request = "INSERT INTO quests (name, who, date, application, selfApplication, done, description) VALUES('" +
                     quest.getName() + "', '" + quest.getDepartment() + "' , '" + new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH).format(quest.getDate()) +
-                    "', '" + quest.getApplication().toPath().getFileName().toString() + "', '" + quest.getSelfApplication().toPath().getFileName().toString() +
+                    "', '" + quest.getApplication().toPath().toString() + "', '" + quest.getSelfApplication().toPath().toString() +
                     "' , " + quest.getIntDone() + " , '" + quest.getDescription() +"')";
             Statement st = connection.createStatement();
             st.execute(request);
@@ -97,13 +97,8 @@ public class CarpetStore implements DataStore {
     }
 
     public Set<Quest> getQuest(Date date) throws StoreException {
-        Set<Quest> resultSet = new TreeSet<>(new Comparator<Quest>() {
-            @Override
-            public int compare(Quest o1, Quest o2) {
-                return o1.getDate().compareTo(o2.getDate());
-            }
-        });
-        String request = "SELECT * FROM quests WHERE date='" + date + "'";
+        Set<Quest> resultSet = new HashSet<>();
+        String request = "SELECT * FROM quests WHERE date='" + new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH).format(date) + "'";
         try {
             Statement st = connection.createStatement();
             ResultSet rs = st.executeQuery(request);
@@ -119,16 +114,8 @@ public class CarpetStore implements DataStore {
                     isDone = true;
                 else isDone = false;
                 File application = new File(rs.getString("application"));
-                Quest quest;
-                if(application == null) {
-                    quest = new Quest(qName, dep, qDate, isDone, description);
-                }
-                else
-                {
-                    File selfApplication = new File(rs.getString("selfApplication"));
-                    quest = new Quest(qName, dep, qDate, application, selfApplication, isDone, description);
-                }
-                resultSet.add(quest);
+                File selfApplication = new File(rs.getString("selfApplication"));
+                resultSet.add(new Quest(qName, dep, qDate, application, selfApplication, isDone, description));
             }
 
         } catch (SQLException e) {

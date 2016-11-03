@@ -6,6 +6,7 @@ import model.Quest;
 import observable.Observer;
 import view.MainWindow;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -38,6 +39,10 @@ public class Controller implements Observer{
                 model.updateQuest(view.getQuest());
                 view.setQuests(model.getqSet());
                 break;
+            case "updateQuest":
+                model.updateQuest(view.getQuest());
+                view.setQuests(model.getqSet());
+                break;
         }
     }
 
@@ -60,5 +65,13 @@ public class Controller implements Observer{
     public Set<Quest> getQuests(Department department)
     {
         return model.getqSet(department);
+    }
+    public Set<Quest> getqSet(String name)
+    {
+        return model.getqSet(name);
+    }
+    public Set<Quest> getQuests(Date date)
+    {
+        return model.getqSet(date);
     }
 }

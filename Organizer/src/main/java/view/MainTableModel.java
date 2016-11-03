@@ -42,8 +42,8 @@ public class MainTableModel extends AbstractTableModel {
             objects[i][3] = ((Quest)qArr[i]).getApplication().getName();
             objects[i][4] = ((Quest)qArr[i]).getSelfApplication().getName();
             if(((Quest)qArr[i]).isDone())
-                objects[i][5] = new ImageIcon("./src/main/resources/icons/plus.jpg");
-            else objects[i][5] = new ImageIcon("./src/main/resources/icons/minus.jpg");
+                objects[i][5] = new ImageIcon(getClass().getResource("/icons/plus.jpg"));
+            else objects[i][5] = new ImageIcon(getClass().getResource("/icons/minus.jpg"));
             objects[i][6] = ((Quest)qArr[i]).getDescription();
         }
         return objects;
@@ -78,4 +78,7 @@ public class MainTableModel extends AbstractTableModel {
     public Class<?> getColumnClass(int columnIndex) {
         return columnClass[columnIndex];
     }
+
+
+
 }
